@@ -29,16 +29,23 @@ if (cluster.isPrimary) {
       const worker = workers[cur];
       if (worker) {
         const { method, url, headers } = req;
-        console.log(method, url, headers);
         const buffers: Buffer[] = [];
         req.on('data', (chunk: Buffer) => {
           buffers.push(chunk);
         }).on('end', () => {
           const body = Buffer.concat(buffers).toString();
           worker.send({ method, url, headers, body });
-
+    
+          worker.once('message', (response) => {
+            res.writeHead(200);
+            res.end(response.responseData);
+          });
+    
           cur = (cur + 1) % numCPUs;
         });
+      } else {
+        res.writeHead(500);
+        res.end('No worker available');
       }
       res.end();
     }

@@ -1,6 +1,6 @@
-import dotenv from 'dotenv';
 import http from 'node:http';
 import { handleRequest } from './routes/userRoutes';
+import dotenv from 'dotenv';
 
 dotenv.config();
 

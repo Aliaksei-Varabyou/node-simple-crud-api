@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from 'node:http';
+import { IncomingMessage } from 'node:http';
 
 import {
   getJsonRequestBody,
@@ -7,16 +7,12 @@ import {
 } from '../services/userService';
 import { db, User } from '../models/user';
 
-const buildResponse = (
-  res: ServerResponse,
-  data: unknown,
-  status = 200,
-): void => {
-  res.writeHead(status, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(data));
-};
+export interface UserResponse {
+  status: number;
+  data: unknown;
+}
 
-const getUserFromResponse = async (req: IncomingMessage): Promise<User> => {
+const getUserFromRequest = async (req: IncomingMessage): Promise<User> => {
   const data = await getJsonRequestBody(req);
   const id = data?.id ?? undefined;
   const username = data?.username ?? undefined;
@@ -25,69 +21,55 @@ const getUserFromResponse = async (req: IncomingMessage): Promise<User> => {
   return { id, username, age, hobbies };
 };
 
-export const getUsers = (res: ServerResponse): void => {
+export const getUsers = (): UserResponse => {
   const users = db.getAllUsers();
-  buildResponse(res, users);
+  return { data: users, status: 200 };
 };
 
-export const getUserById = (
-  res: ServerResponse,
-  userId: string | undefined,
-): void => {
+export const getUserById = (userId: string | undefined): UserResponse => {
   if (!userId || !validateUUID(userId)) {
-    buildResponse(res, { message: 'Invalid UUID format' }, 400);
-  } else {
-    const user = db.getUserById(userId);
-    if (!user) {
-      buildResponse(res, { message: 'User not found' }, 404);
-    }
-    buildResponse(res, user);
+    return { data: { message: 'Invalid UUID format' }, status: 400 };
   }
+  const user = db.getUserById(userId);
+  if (!user) {
+    return { data: { message: 'User not found' }, status: 404 };
+  }
+  return { data: user, status: 200 };
 };
 
 export const createUser = async (
   req: IncomingMessage,
-  res: ServerResponse,
-): Promise<void> => {
-  const { username, age, hobbies } = await getUserFromResponse(req);
+): Promise<UserResponse> => {
+  const { username, age, hobbies } = await getUserFromRequest(req);
   if (!validateUser(username, age)) {
-    buildResponse(res, { message: 'Missing required fields' }, 400);
+    return { data: { message: 'Missing required fields' }, status: 400 };
   }
-
   const newUser = db.createUser(username, age, hobbies);
-  buildResponse(res, newUser, 201);
+  return { data: newUser, status: 200 };
 };
 
 export const updateUser = async (
   req: IncomingMessage,
-  res: ServerResponse,
   userId: string | undefined,
-): Promise<void> => {
+): Promise<UserResponse> => {
   if (!userId || !validateUUID(userId)) {
-    buildResponse(res, { message: 'Invalid UUID format' }, 400);
-  } else {
-    const { username, age, hobbies } = await getUserFromResponse(req);
-    const updatedUser = db.updateUser(userId, username, age, hobbies);
-    if (!updatedUser) {
-      buildResponse(res, { message: 'User not found' }, 404);
-    } else {
-      buildResponse(res, updatedUser, 200);
-    }
+    return { data: { message: 'Invalid UUID format' }, status: 400 };
   }
+  const { username, age, hobbies } = await getUserFromRequest(req);
+  const updatedUser = db.updateUser(userId, username, age, hobbies);
+  if (!updatedUser) {
+    return { data: { message: 'User not found' }, status: 404 };
+  }
+  return { data: updatedUser, status: 200 };
 };
 
-export const deleteUser = (
-  res: ServerResponse,
-  userId: string | undefined,
-): void => {
+export const deleteUser = (userId: string | undefined): UserResponse => {
   if (!userId || !validateUUID(userId)) {
-    buildResponse(res, { message: 'Invalid UUID format' }, 400);
-  } else {
-    const isDeleted = db.deleteUser(userId);
-    if (!isDeleted) {
-      buildResponse(res, { message: 'User not found' }, 404);
-    } else {
-      buildResponse(res, '', 204);
-    }
+    return { data: { message: 'Invalid UUID format' }, status: 400 };
   }
+  const isDeleted = db.deleteUser(userId);
+  if (!isDeleted) {
+    return { data: { message: 'User not found' }, status: 404 };
+  }
+  return { data: '', status: 204 };
 };

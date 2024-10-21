@@ -3,6 +3,8 @@ import cluster from 'node:cluster';
 import os from 'node:os';
 import dotenv from 'dotenv';
 
+import { handleRequest } from './routes/userRoutes';
+
 dotenv.config();
 
 const host = 'localhost';
@@ -14,21 +16,31 @@ if (cluster.isPrimary) {
 
   // Creating of working processes
   for (let i = 0; i < numCPUs; i++) {
-    cluster.fork({PORT: port + i + 1});
+    cluster.fork({ PORT: port + i + 1 });
   }
 
   // Current working process
   let cur: number = 0;
 
   // creating load balancer server
-  const server: http.Server = http.createServer(() => {
+  const server: http.Server = http.createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
     if (cluster.workers) {
       const workers = Object.values(cluster.workers);
       const worker = workers[cur];
       if (worker) {
-        worker.send('proxy', server);
-        cur = (cur + 1) % numCPUs;
+        const { method, url, headers } = req;
+        console.log(method, url, headers);
+        const buffers: Buffer[] = [];
+        req.on('data', (chunk: Buffer) => {
+          buffers.push(chunk);
+        }).on('end', () => {
+          const body = Buffer.concat(buffers).toString();
+          worker.send({ method, url, headers, body });
+
+          cur = (cur + 1) % numCPUs;
+        });
       }
+      res.end();
     }
   });
 
@@ -38,20 +50,47 @@ if (cluster.isPrimary) {
     console.log(`Worker ${worker.process.pid} died`);
   });
 } else {
-  const server: http.Server = http.createServer((_, res: http.ServerResponse) => {
-    res.writeHead(200);
-    res.end(`Hello from worker ${process.pid}`);
+  const workerPort = parseInt(process.env.PORT || '3000', 10);
+
+  const server: http.Server = http.createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
+    handleRequest(req, res);
   });
 
-  server.listen(0, 'localhost', () => {
-    console.log(`Worker started at http://localhost:${port}`);
+  server.listen(workerPort, 'localhost', () => {
+    console.log(`Worker started at http://localhost:${workerPort}`);
   });
 
-  process.on('message', (msg: string, server: http.Server) => {
-    if (msg === 'proxy') {
-      server.on('connection', (socket: any) => {
-        server.emit('connection', socket);
+  process.on('message', (msg: any) => {
+    const { method, url, headers, body } = msg;
+    console.log(222, method, url, headers, body );
+    const requestOptions = {
+      hostname: 'localhost',
+      port: workerPort,
+      path: url,
+      method: method,
+      headers: headers,
+    };
+
+    const req = http.request(requestOptions, (res) => {
+      let responseData = '';
+      res.on('data', (chunk) => {
+        responseData += chunk;
       });
+      res.on('end', () => {
+        console.log(`Response from worker ${process.pid} on port ${workerPort}: ${responseData}`);
+        if (process.send) {
+          process.send({ responseData, workerPort });
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      console.error(`Error in worker ${process.pid}: ${error.message}`);
+    });
+
+    if (body) {
+      req.write(body);
     }
+    req.end();
   });
 }

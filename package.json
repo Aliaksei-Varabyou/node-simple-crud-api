@@ -16,7 +16,7 @@
     "start:dev": "nodemon -I --exec node --experimental-specifier-resolution=node  --loader ts-node/esm ./src/app.ts",
     "build": "webpack --mode production",
     "start:prod": "npm run build && node ./dist/app.bundle.js",
-    "start:multi": "nodemon -I --exec node --loader ts-node/esm ./src/multi.ts"
+    "start:multi": "nodemon -I --exec node  --experimental-specifier-resolution=node --loader ts-node/esm ./src/multi.ts"
   },
   "devDependencies": {
     "@types/jest": "^29.5.2",

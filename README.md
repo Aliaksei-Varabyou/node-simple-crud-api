@@ -26,23 +26,19 @@ Follow these steps to install the application:
 2. Install dependencies:
    ```bash
    npm install
-
 # Launching the application
 
 You can run the application in one of two modes:
 
-## Single process mode
+1. Single process mode
    ```bash
    npm run start:dev
-
-## Multiprocess mode
+2. Multiprocess mode
    ```bash
    npm run start:multi
-
-## It is also possible to build applications in prod mode
+3. It is also possible to build applications in prod mode
    ```bash
    npm run start:prod
-
 # Usage
 
 Once the application is running, you can interact with it by sending HTTP requests to the appropriate endpoints:

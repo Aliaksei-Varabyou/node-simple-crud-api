@@ -26,6 +26,9 @@ Follow these steps to install the application:
 2. Install dependencies:
    ```bash
    npm install
+3. Create .env (you can use any other number for port):
+   ```bash
+   PORT = 4000;
 # Launching the application
 
 You can run the application in one of two modes:
@@ -43,11 +46,11 @@ You can run the application in one of two modes:
 
 Once the application is running, you can interact with it by sending HTTP requests to the appropriate endpoints:
 
-GET /api/users: getting a list of data.
-POST /api/users: creating a new entry.
-GET /api/users/:id: getting a record by ID.
-PUT /api/users/:id: update record by ID.
-DELETE /api/users/:id: delete record by ID.
+1. GET /api/users: getting a list of data.
+2. POST /api/users: creating a new entry.
+3. GET /api/users/:id: getting a record by ID.
+4. PUT /api/users/:id: update record by ID.
+5. DELETE /api/users/:id: delete record by ID.
 
 # Multiprocess mode
 

@@ -2,27 +2,47 @@ module.exports = {
   root: true,
   env: {
     node: true,
-    es2021: true,
+    es2022: true,
     jest: true,
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 12,
+    ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint', 'prettier'],
+  plugins: ['@typescript-eslint', 'import', 'prettier'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended', // включает prettier как правило ESLint
+    'plugin:import/recommended',
+    'plugin:import/typescript',
+    'plugin:prettier/recommended',
   ],
   rules: {
-    'prettier/prettier': 'error', // ошибки prettier будут подсвечиваться ESLint
-    'no-console': 'off', // можно использовать console.log в Node
-    '@typescript-eslint/no-unused-vars': [
+    'prettier/prettier': ['error'],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+
+    '@typescript-eslint/no-var-requires': 'error',
+
+    'import/order': [
       'warn',
-      { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      {
+        groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index']],
+        'newlines-between': 'always',
+      },
     ],
+
+    'no-console': 'off',
   },
-  ignorePatterns: ['dist', 'node_modules'],
+  settings: {
+    'import/resolver': {
+      typescript: {
+        alwaysTryTypes: true,
+      },
+      node: {
+        extensions: ['.js', '.ts'],
+      },
+    },
+  },
 };

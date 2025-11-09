@@ -1,6 +1,6 @@
 import { validate } from 'uuid';
 import { IncomingMessage } from 'node:http';
-import { User } from '../models/user';
+import type { User } from '../models/user.ts';
 
 export const validateUUID = (id: string): boolean => {
   return validate(id);

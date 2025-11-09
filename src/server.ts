@@ -1,11 +1,11 @@
 import dotenv from 'dotenv';
 import { createServer } from 'node:http';
-import { handleRequest } from './routes/userRoutes';
+import { handleRequest } from './routes/userRoutes.ts';
 
-dotenv.config();
+dotenv.config({ debug: false });
 
 const host = 'localhost';
-const port = parseInt(process.env.PORT || '3000', 10);
+const port = parseInt(process.env.PORT || '4000', 10);
 
 const server = createServer((request, result) => {
   handleRequest(request, result);

@@ -32,7 +32,7 @@ describe('User CRUD API', () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newUser),
     });
-    const data = await res.json() as User;
+    const data = (await res.json()) as User;
 
     expect(res.status).toBe(201);
     expect(data?.username).toBe('Alex');
@@ -42,7 +42,7 @@ describe('User CRUD API', () => {
 
   it('GET /api/users/:id -> get created user', async () => {
     const res = await fetch(`${baseUrl}/api/users/${createdUserId}`);
-    const data = await res.json() as User;
+    const data = (await res.json()) as User;
 
     expect(res.status).toBe(200);
     expect(data?.id).toBe(createdUserId);
@@ -56,7 +56,7 @@ describe('User CRUD API', () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedUser),
     });
-    const data = await res.json() as User;
+    const data = (await res.json()) as User;
     expect(res.status).toBe(200);
     expect(data?.username).toBe('Karl Marks');
   });
@@ -64,7 +64,7 @@ describe('User CRUD API', () => {
   it('DELETE /api/users/:id -> remove user', async () => {
     const res = await fetch(`${baseUrl}/api/users/${createdUserId}`, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     });
     expect(res.status).toBe(204);
   });

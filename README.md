@@ -60,3 +60,8 @@ DELETE /api/users/:id: delete record by ID.
 
 In multiprocess mode, requests are distributed across different processes. Each process listens to its own unique port, starting from 4001 and onwards. The load balancer listens on port 4000 and distributes incoming requests between the processes.
 ````
+
+# Testing
+
+````bash
+npm run test

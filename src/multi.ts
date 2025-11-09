@@ -23,33 +23,36 @@ if (cluster.isPrimary) {
   let cur: number = 0;
 
   // creating load balancer server
-  const server: http.Server = http.createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
-    if (cluster.workers) {
-      const workers = Object.values(cluster.workers);
-      const worker = workers[cur];
-      if (worker) {
-        const { method, url, headers } = req;
-        const buffers: Buffer[] = [];
-        req.on('data', (chunk: Buffer) => {
-          buffers.push(chunk);
-        }).on('end', () => {
-          const body = Buffer.concat(buffers).toString();
-          worker.send({ method, url, headers, body });
-    
-          worker.once('message', (response) => {
-            res.writeHead(200);
-            res.end(response.responseData);
-          });
-    
-          cur = (cur + 1) % numCPUs;
-        });
-      } else {
-        res.writeHead(500);
-        res.end('No worker available');
+  const server: http.Server = http.createServer(
+    (req: http.IncomingMessage, res: http.ServerResponse) => {
+      if (cluster.workers) {
+        const workers = Object.values(cluster.workers);
+        const worker = workers[cur];
+        if (worker) {
+          const { method, url, headers } = req;
+          const buffers: Buffer[] = [];
+          req
+            .on('data', (chunk: Buffer) => {
+              buffers.push(chunk);
+            })
+            .on('end', () => {
+              const body = Buffer.concat(buffers).toString();
+              worker.send({ method, url, headers, body });
+
+              worker.once('message', (response) => {
+                res.writeHead(200);
+                res.end(response.responseData);
+              });
+
+              cur = (cur + 1) % numCPUs;
+            });
+        } else {
+          res.writeHead(500);
+          res.end('No worker available');
+        }
       }
-      res.end();
-    }
-  });
+    },
+  );
 
   server.listen(port, host, () => console.log(`Load balancer running on port ${port}`));
 
@@ -59,9 +62,11 @@ if (cluster.isPrimary) {
 } else {
   const workerPort = parseInt(process.env.PORT || '4000', 10);
 
-  const server: http.Server = http.createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
-    handleRequest(req, res);
-  });
+  const server: http.Server = http.createServer(
+    (req: http.IncomingMessage, res: http.ServerResponse) => {
+      handleRequest(req, res);
+    },
+  );
 
   server.listen(workerPort, 'localhost', () => {
     console.log(`Worker started at http://localhost:${workerPort}`);
@@ -69,7 +74,6 @@ if (cluster.isPrimary) {
 
   process.on('message', (msg: any) => {
     const { method, url, headers, body } = msg;
-    console.log(222, method, url, headers, body );
     const requestOptions = {
       hostname: 'localhost',
       port: workerPort,
@@ -85,9 +89,7 @@ if (cluster.isPrimary) {
       });
       res.on('end', () => {
         console.log(`Response from worker ${process.pid} on port ${workerPort}: ${responseData}`);
-        if (process.send) {
-          process.send({ responseData, workerPort });
-        }
+        if (process.send) process.send({ responseData });
       });
     });
 

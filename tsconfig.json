@@ -21,10 +21,7 @@
     "strictPropertyInitialization": false,
     "noImplicitAny": true,
     "paths": {
-      "*": [
-        "node_modules/*",
-        "src/types/*"
-      ]
+      "*": ["node_modules/*", "src/types/*"]
     }
-  },
+  }
 }

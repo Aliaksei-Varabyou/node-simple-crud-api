@@ -7,7 +7,7 @@ dotenv.config({ debug: false });
 const host = 'localhost';
 const port = parseInt(process.env.PORT || '4000', 10);
 
-const server = createServer((request, result) => {
+export const server = createServer((request, result) => {
   handleRequest(request, result);
 });
 

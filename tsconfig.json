@@ -4,9 +4,17 @@
     "module": "CommonJS",
     "rootDir": "src",
     "outDir": "dist",
+    "baseUrl": ".",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noImplicitAny": true,
+    "paths": {
+      "*": [
+        "node_modules/*",
+        "src/types/*"
+      ]
+    }
   },
   "include": ["src"]
 }

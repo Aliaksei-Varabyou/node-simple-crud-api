@@ -2,7 +2,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon --exec ts-node src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "npx ts-node ./src/server.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write .",

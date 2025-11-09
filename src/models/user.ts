@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-interface User {
+export interface User {
   id: string,
   username: string,
   age:number,
@@ -8,6 +8,21 @@ interface User {
 }
 
 class InMemoryDB {
+  // static getUserById(userId: string) {
+  //   throw new Error('Method not implemented.');
+  // }
+  // static updateUser(userId: string, username: string, age: number, hobbies: string[]) {
+  //   throw new Error('Method not implemented.');
+  // }
+  // static deleteUser(userId: string) {
+  //   throw new Error('Method not implemented.');
+  // }
+  // static createUser(username: string, age: number, hobbies: string[]) {
+  //   throw new Error('Method not implemented.');
+  // }
+  // static getAllUsers() {
+  //   throw new Error('Method not implemented.');
+  // }
   private users: User[] = [];
 
   public createUser = (
@@ -57,4 +72,4 @@ class InMemoryDB {
   };
 }
 
-export const db = InMemoryDB;
+export const db = new InMemoryDB();

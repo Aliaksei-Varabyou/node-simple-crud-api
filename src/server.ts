@@ -1,11 +1,11 @@
-import http from 'node:http';
+import { createServer } from 'node:http';
 import { handleRequest } from './routes/userRoutes';
 
 const host = 'localhost';
 const port = 4000;
 
-const server = http.createServer((res, req) => {
-  handleRequest(res, req);
+const server = createServer((request, result) => {
+  handleRequest(request, result);
 });
 
 server.listen(port, host, () => {

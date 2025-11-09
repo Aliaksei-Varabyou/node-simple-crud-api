@@ -1,16 +1,30 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "rootDir": "src",
-    "outDir": "dist",
-    "esModuleInterop": true,
+    "baseUrl": "src",
+    "allowSyntheticDefaultImports": true,
+    "lib": ["ESNext"],
+    "target": "ES6",
+    "module": "ESNext",
+    "outDir": "./dist",
     "strict": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "allowImportingTsExtensions": true
+    "moduleResolution": "Node",
+    "noUncheckedIndexedAccess": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "strictPropertyInitialization": false,
+    "noImplicitAny": true,
+    "paths": {
+      "*": [
+        "node_modules/*",
+        "src/types/*"
+      ]
+    }
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
 }

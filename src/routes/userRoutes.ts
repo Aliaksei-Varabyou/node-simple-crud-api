@@ -1,13 +1,13 @@
 import { IncomingMessage, ServerResponse } from 'node:http';
-import { parseUrl } from '../services/userService.ts';
+import { parseUrl } from '../services/userService';
 import {
   getUsers,
   getUserById,
   createUser,
   updateUser,
   deleteUser,
-} from '../controllers/userController.ts';
-import type { UserResponse } from '../controllers/userController.ts';
+} from '../controllers/userController';
+import type { UserResponse } from '../controllers/userController';
 
 export const handleServerError = (response: ServerResponse, error: unknown): void => {
   console.error('Server Error:', error);

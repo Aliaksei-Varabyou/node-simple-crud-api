@@ -1,7 +1,7 @@
 import { IncomingMessage } from 'node:http';
 
-import { getJsonRequestBody, validateUser, validateUUID } from '../services/userService.ts';
-import { db } from '../models/user.ts';
+import { getJsonRequestBody, validateUser, validateUUID } from '../services/userService';
+import { db } from '../models/user';
 import type { User } from '../models/user.ts';
 
 export interface UserResponse {

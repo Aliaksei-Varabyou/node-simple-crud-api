@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { createServer } from 'node:http';
-import { handleRequest } from './routes/userRoutes.ts';
+import { handleRequest } from './routes/userRoutes';
 
 dotenv.config({ debug: false });
 
